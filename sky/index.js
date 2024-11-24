@@ -5,13 +5,17 @@ const express = require(`express`);
 const app = express();
 
 app.use(express.json());
+app.set("view engine", "twig");
+app.set("views", __dirname + "/src/views");
 
 // Load in our RESTful routers
 const routers = require("./routers/index.js");
 
 // Home page welcome middleware
 app.get("/", (req, res) => {
-  res.status(200).send("Welcome to Star Tracker Library");
+  res.status(200).render("home/home", {
+    name: "Justin",
+  });
 });
 
 // Register our RESTful routers with our "app"
