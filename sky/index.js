@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true })); // Only this is necessary for f
 app.set("view engine", "twig");
 app.set("views", __dirname + "/src/views");
 
-// In-memory storage for documents
+// In-memory storage for documents (Note: will be lost on server restart)
 let documents = [];
 
 // Home route
@@ -33,39 +33,44 @@ app.get("/document_list", (req, res) => {
 });
 
 // Route to handle form submission (POST)
-app.post("/documents", (req, res) => {
-  const { name, type, description, size } = req.body;
+app.post("/document", (req, res) => {
+  const { type } = req.body; // Extract type from form submission
+  const connectedEntities = {};
 
-  if (!name || !description || !type || !size) {
-    return res.status(400).send("All fields are required.");
-  }
-
-  let connectedEntities = {};
+  // Mapping input fields based on the selected entity type
   if (type === "planet") {
-    connectedEntities = { star: req.body["planet-star"] };
+    connectedEntities.star = req.body["planet-star"];
   } else if (type === "galaxy") {
-    connectedEntities = {
-      planets: req.body["galaxy-planet"],
-      stars: req.body["galaxy-star"],
-    };
+    connectedEntities.planets = req.body["galaxy-planet"];
+    connectedEntities.stars = req.body["galaxy-star"];
   } else if (type === "star") {
-    connectedEntities = {
-      planet: req.body["star-planet"],
-      galaxy: req.body["star-galaxy"],
-    };
+    connectedEntities.planet = req.body["star-planet"];
+    connectedEntities.galaxy = req.body["star-galaxy"];
   }
 
-  const newDoc = {
-    id: documents.length + 1,
-    name,
-    description,
-    type,
-    size,
-    connected: connectedEntities,
+  // Validate the required fields for each entity type
+  const missingFields = [];
+  for (const [key, value] of Object.entries(connectedEntities)) {
+    if (!value) missingFields.push(key);
+  }
+
+  if (missingFields.length > 0) {
+    return res
+      .status(400)
+      .json({ error: `Missing fields: ${missingFields.join(", ")}` });
+  }
+
+  // Document structure
+  const newDocument = {
+    id: documents.length + 1, // Generate a new ID for each document
+    type, // Store the entity type
+    connectedEntities, // Store connected entities based on type
   };
 
-  documents.push(newDoc);
-  res.redirect("/document_list");
+  // Save to in-memory documents array
+  documents.push(newDocument);
+
+  res.status(200).json({ message: "Form submitted successfully", newDocument });
 });
 
 // Route to render the edit form
@@ -83,11 +88,12 @@ app.get("/documents/:id/edit", (req, res) => {
 // Route to update a document
 app.put("/documents/:id", (req, res) => {
   const { id } = req.params;
-  const { description, type, size, connected } = req.body;
+  const { name, description, type, size, connected } = req.body;
 
   const document = documents.find((doc) => doc.id === parseInt(id));
 
   if (document) {
+    document.name = name;
     document.description = description;
     document.type = type;
     document.size = size;

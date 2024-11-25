@@ -1,44 +1,57 @@
-{% include 'partials/header.twig' %}
-
 <h2>Add a New Connection</h2>
+<form action="/document" method="POST" enctype="multipart/form-data">
 
-<form action="/documents" method="POST" enctype="multipart/form-data">
   <label for="type">Select Type:</label>
-  <select id="type" name="type" required>
+  <select id="type" name="type">
     <option value="planet">Planet</option>
     <option value="galaxy">Galaxy</option>
     <option value="star">Star</option>
   </select>
 
-  {% include 'partials/planet-fields.twig' %}
-  {% include 'partials/galaxy-fields.twig' %}
-  {% include 'partials/star-fields.twig' %}
+  <div id="planet-fields" class="entity-fields" style="display: none;">
+    <label for="planet-name">Name:</label>
+    <input type="text" id="planet-name" name="name">
+  </div>
+  
+  <div id="galaxy-fields" class="entity-fields" style="display: none;">
+    <label for="galaxy-name">Name:</label>
+    <input type="text" id="galaxy-name" name="name">
+  </div>
+  
+  <div id="star-fields" class="entity-fields" style="display: none;">
+    <label for="star-name">Name:</label>
+    <input type="text" id="star-name" name="name">
+  </div>
 
   <button type="submit">Submit</button>
 </form>
 
 <script>
- document.getElementById('type').addEventListener('change', function () {
-  const selectedType = this.value;
+console.log(document.getElementById('planet-fields'));  // Check if this is rendering
 
-  // Hide all fields first
-  document.querySelectorAll('.entity-fields').forEach(function (field) {
-    field.style.display = 'none';
+window.addEventListener('DOMContentLoaded', function () {
+  const typeSelect = document.getElementById('type');
+  
+  typeSelect.addEventListener('change', function () {
+    const selectedType = this.value;
+    console.log(selectedType);  // Log selected type for debugging
+
+    // Hide all fields first
+    document.querySelectorAll('.entity-fields').forEach(function (field) {
+      field.style.display = 'none';
+    });
+
+    // Show the selected type's fields
+    if (selectedType === 'planet') {
+      document.getElementById('planet-fields').style.display = 'block';
+    } else if (selectedType === 'galaxy') {
+      document.getElementById('galaxy-fields').style.display = 'block';
+    } else if (selectedType === 'star') {
+      document.getElementById('star-fields').style.display = 'block';
+    }
   });
 
-  // Show the selected type's fields
-  if (selectedType === 'planet') {
-    document.getElementById('planet-fields').style.display = 'block';
-  } else if (selectedType === 'galaxy') {
-    document.getElementById('galaxy-fields').style.display = 'block';
-  } else if (selectedType === 'star') {
-    document.getElementById('star-fields').style.display = 'block';
-  }
+  // Trigger the change event on page load
+  typeSelect.dispatchEvent(new Event('change'));
 });
-
-// Trigger change event on page load to set the correct form
-document.getElementById('type').dispatchEvent(new Event('change'));
-
 </script>
-
-{% include 'partials/footer.twig' %}
