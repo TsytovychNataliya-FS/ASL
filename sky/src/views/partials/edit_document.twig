@@ -1,14 +1,92 @@
-<h1>Edit Document</h1>
+{% include 'partials/header.twig' %}
+
+<h2>Edit Document</h2>
+
 <form action="/documents/{{ document.id }}" method="POST">
   <input type="hidden" name="_method" value="PUT">
-  <label for="title">Title</label>
-  <input type="text" id="title" name="title" value="{{ document.title }}">
-  
-  <label for="description">Description</label>
-  <input type="text" id="description" name="description" value="{{ document.description }}">
-  
-  <label for="file_url">File URL</label>
-  <input type="text" id="file_url" name="file_url" value="{{ document.file_url }}">
-  
-  <button type="submit">Save</button>
+
+  <label for="description">Description:</label>
+  <textarea name="description" id="description" required>{{ document.description }}</textarea>
+
+  <label for="type">Type:</label>
+  <select name="type" id="type" required>
+    <option value="planet" {% if document.type == 'planet' %}selected{% endif %}>Planet</option>
+    <option value="galaxy" {% if document.type == 'galaxy' %}selected{% endif %}>Galaxy</option>
+    <option value="star" {% if document.type == 'star' %}selected{% endif %}>Star</option>
+  </select>
+
+  <div id="planet-fields" class="entity-fields" style="display: {% if document.type == 'planet' %}block{% else %}none{% endif %};">
+    <label for="planet-name">Name:</label>
+    <input type="text" name="title" id="planet-name" value="{{ document.title }}">
+
+    <label for="planet-size">Size:</label>
+    <input type="text" name="size" id="planet-size" value="{{ document.size }}">
+
+    <label for="planet-description">Description:</label>
+    <textarea name="description" id="planet-description">{{ document.description }}</textarea>
+
+    <label for="planet-star">Connected Star:</label>
+    <input type="text" name="connected_star" id="planet-star" value="{{ document.connected_star }}">
+  </div>
+
+  <div id="galaxy-fields" class="entity-fields" style="display: {% if document.type == 'galaxy' %}block{% else %}none{% endif %};">
+    <label for="galaxy-name">Name:</label>
+    <input type="text" name="title" id="galaxy-name" value="{{ document.title }}">
+
+    <label for="galaxy-size">Size:</label>
+    <input type="text" name="size" id="galaxy-size" value="{{ document.size }}">
+
+    <label for="galaxy-description">Description:</label>
+    <textarea name="description" id="galaxy-description">{{ document.description }}</textarea>
+
+    <label for="galaxy-planet">Connected Planets:</label>
+    <input type="text" name="connected_planets" id="galaxy-planet" value="{{ document.connected_planets }}">
+
+    <label for="galaxy-star">Connected Stars:</label>
+    <input type="text" name="connected_stars" id="galaxy-star" value="{{ document.connected_stars }}">
+  </div>
+
+  <div id="star-fields" class="entity-fields" style="display: {% if document.type == 'star' %}block{% else %}none{% endif %};">
+    <label for="star-name">Name:</label>
+    <input type="text" name="title" id="star-name" value="{{ document.title }}">
+
+    <label for="star-size">Size:</label>
+    <input type="text" name="size" id="star-size" value="{{ document.size }}">
+
+    <label for="star-description">Description:</label>
+    <textarea name="description" id="star-description">{{ document.description }}</textarea>
+
+    <label for="star-planet">Connected Planet:</label>
+    <input type="text" name="connected_planet" id="star-planet" value="{{ document.connected_planet }}">
+
+    <label for="star-galaxy">Connected Galaxy:</label>
+    <input type="text" name="connected_galaxy" id="star-galaxy" value="{{ document.connected_galaxy }}">
+  </div>
+
+  <button type="submit">Update</button>
 </form>
+
+<script>
+  document.getElementById('type').addEventListener('change', function () {
+    const selectedType = this.value;
+
+    // Hide all fields first
+    document.querySelectorAll('.entity-fields').forEach(function (field) {
+      field.style.display = 'none';
+    });
+
+    // Show the selected type's fields
+    if (selectedType === 'planet') {
+      document.getElementById('planet-fields').style.display = 'block';
+    } else if (selectedType === 'galaxy') {
+      document.getElementById('galaxy-fields').style.display = 'block';
+    } else if (selectedType === 'star') {
+      document.getElementById('star-fields').style.display = 'block';
+    }
+  });
+
+  // Trigger change event on page load to set the correct form
+  document.getElementById('type').dispatchEvent(new Event('change'));
+</script>
+
+{% include 'partials/footer.twig' %}

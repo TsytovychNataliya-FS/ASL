@@ -1,0 +1,44 @@
+{% include 'partials/header.twig' %}
+
+<h2>Add a New Connection</h2>
+
+<form action="/documents" method="POST" enctype="multipart/form-data">
+  <label for="type">Select Type:</label>
+  <select id="type" name="type" required>
+    <option value="planet">Planet</option>
+    <option value="galaxy">Galaxy</option>
+    <option value="star">Star</option>
+  </select>
+
+  {% include 'partials/planet-fields.twig' %}
+  {% include 'partials/galaxy-fields.twig' %}
+  {% include 'partials/star-fields.twig' %}
+
+  <button type="submit">Submit</button>
+</form>
+
+<script>
+ document.getElementById('type').addEventListener('change', function () {
+  const selectedType = this.value;
+
+  // Hide all fields first
+  document.querySelectorAll('.entity-fields').forEach(function (field) {
+    field.style.display = 'none';
+  });
+
+  // Show the selected type's fields
+  if (selectedType === 'planet') {
+    document.getElementById('planet-fields').style.display = 'block';
+  } else if (selectedType === 'galaxy') {
+    document.getElementById('galaxy-fields').style.display = 'block';
+  } else if (selectedType === 'star') {
+    document.getElementById('star-fields').style.display = 'block';
+  }
+});
+
+// Trigger change event on page load to set the correct form
+document.getElementById('type').dispatchEvent(new Event('change'));
+
+</script>
+
+{% include 'partials/footer.twig' %}

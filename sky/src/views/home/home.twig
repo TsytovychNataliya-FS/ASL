@@ -1,26 +1,5 @@
 {% extends 'layouts/_default.twig' %}
+
 {% block main_content %}
-
-<h1>{{ title }}</h1>
-
-<ul>
-  {% for document in documents %}
-    <li>
-      <h3>{{ document.title }}</h3>
-      <p>{{ document.description }}</p>
-      <a href="{{ document.file_url }}" target="_blank">View File</a>
-    </li>
-  {% else %}
-    <p>No documents found.</p>
-  {% endfor %}
-</ul>
-<form action="/documents/{{ document.id }}" method="POST" onsubmit="return confirm('Are you sure?');">
-  <button type="submit">Delete</button>
-</form>
-
-<h2>Documents List</h2>
-{% include 'partials/document_list.twig' %}
-
-
+<h1>Let's Make the Universe!</h1>
 {% endblock %}
-

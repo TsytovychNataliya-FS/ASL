@@ -1,9 +1,9 @@
+{% include 'partials/header.twig' %}
+
 <ul>
   {% for document in documents %}
     <li>
-      <h3>{{ document.title }}</h3>
       <p>{{ document.description }}</p>
-      <a href="{{ document.file_url }}" target="_blank">View File</a>
       <form action="/documents/{{ document.id }}" method="POST">
         <input type="hidden" name="_method" value="DELETE">
         <button type="submit">Delete</button>
@@ -14,3 +14,17 @@
     <p>No documents found.</p>
   {% endfor %}
 </ul>
+
+{% if pagination %}
+  <div class="pagination">
+    {% if pagination.prev %}
+      <a href="?page={{ pagination.prev }}">Previous</a>
+    {% endif %}
+    <span>Page {{ pagination.current }} of {{ pagination.total }}</span>
+    {% if pagination.next %}
+      <a href="?page={{ pagination.next }}">Next</a>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% include 'partials/footer.twig' %}
